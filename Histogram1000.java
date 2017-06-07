@@ -39,16 +39,23 @@ public class Histogram1000 extends Configured implements Tool{
             else
                 return "symbol";
         }
+        @Override
+        public void run(Context context) throws IOException, InterruptedException {
+          setup(context);
+          int count = 0;
+          while (context.nextKeyValue() && count++ < 1000) {
+            map(context.getCurrentKey(), context.getCurrentValue(), context);
+          }
+        }
 
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             StringTokenizer itr = new StringTokenizer(value.toString(), "_");
             int count = 0;
-            while (itr.hasMoreTokens() && count< 51) {
+            while (itr.hasMoreTokens()) {
                 String str = itr.nextToken();
                 String keyword = whatIsTheKey(str.charAt(0));
                 word.set(keyword);
                 context.write(word, one);
-                count++;
             }
         }
     }
@@ -157,4 +164,3 @@ public class Histogram1000 extends Configured implements Tool{
         return (result ? 0 : 1);
     }
 }
-
